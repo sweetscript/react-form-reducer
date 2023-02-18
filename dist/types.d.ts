@@ -1,4 +1,5 @@
 import React, { ChangeEventHandler } from 'react';
+import { ErrorMessages, Rules } from 'validatorjs';
 export interface FormHookType<R> {
     fields: R;
     setFields: (fields: R) => void;
@@ -12,10 +13,13 @@ export interface FormHookType<R> {
     setIsBusy: React.Dispatch<React.SetStateAction<boolean>>;
     reset: () => void;
     errors: FormErrorsProps;
+    validate: (fields?: Array<keyof R>) => boolean;
 }
 export type FormContextType<R> = FormHookType<R>;
 export type UseFormOptions<T> = {
     onUpdateFields?: (fields: T) => T;
+    validationRules?: Rules;
+    validationMessages?: ErrorMessages;
 };
 export type Errors = {
     [key: string]: string[];

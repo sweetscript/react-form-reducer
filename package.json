@@ -21,13 +21,14 @@
   "keywords": [
     "react"
   ],
-  "author": "Majid Kuhail",
+  "author": "Majid Kuhail <majid@sweetscript.com>",
   "license": "MIT",
   "peerDependencies": {
     "react": "^18.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",
+    "@types/validatorjs": "^3.15.0",
     "@typescript-eslint/eslint-plugin": "^5.52.0",
     "@typescript-eslint/parser": "^5.52.0",
     "eslint": "^8.34.0",

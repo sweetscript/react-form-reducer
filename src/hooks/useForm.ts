@@ -1,6 +1,7 @@
 import { ChangeEventHandler, useReducer, useState } from 'react';
 import useFormErrors from './useFormErrors';
 import { FormHookType, UseFormOptions } from '../types';
+import Validator, { ErrorMessages, Rules } from 'validatorjs';
 
 /**
  * This is the form state hook
@@ -11,11 +12,15 @@ export default function useForm<T>(
   defaultValues: T,
   options?: UseFormOptions<T>
 ): FormHookType<T> {
-  const errors = useFormErrors();
+  const formErrors = useFormErrors();
 
   const [isDirty, setIsDirty] = useState<boolean>(false);
   const [isBusy, setIsBusy] = useState<boolean>(false);
   const [step, setStep] = useState<number>(1);
+  const [validationRules] = useState<Rules>(options?.validationRules || {});
+  const [validationMessages] = useState<ErrorMessages>(
+    options?.validationMessages || {}
+  );
 
   const { onUpdateFields } = options || {};
 
@@ -40,6 +45,9 @@ export default function useForm<T>(
     const v: { [key: string]: unknown } = {};
     v[name as string] = value;
     setFields(v as Partial<T>, true);
+
+    //Clear field error if present
+    formErrors.forget(name as string);
   };
   const handleInputChange =
     (
@@ -52,6 +60,8 @@ export default function useForm<T>(
       const targetType = target.getAttribute('type') || 'text';
       if (['checkbox', 'radio'].indexOf(targetType) !== -1) {
         setField(name, target instanceof HTMLInputElement && target.checked);
+      } else if (['number', 'range'].indexOf(targetType) !== -1) {
+        setField(name, Number(target.value));
       } else {
         setField(name, target.value);
       }
@@ -60,18 +70,42 @@ export default function useForm<T>(
     setFields(defaultValues, false);
   };
 
+  // Validation logic
+  function validate(fieldsToCheck: Array<keyof T>) {
+    let validateFields: { [key: string]: unknown } = fields;
+    if (fieldsToCheck) {
+      validateFields = {};
+      for (const fieldKey in fields) {
+        if (fieldsToCheck.indexOf(fieldKey)) {
+          validateFields[fieldKey] = fields[fieldKey];
+        }
+      }
+    }
+    const validation = new Validator(
+      validateFields,
+      validationRules,
+      validationMessages
+    );
+    const pass = validation.passes();
+    if (pass) return true;
+    const errors = validation.errors.all();
+    formErrors.set(errors);
+    return false;
+  }
+
   return {
     fields,
     setFields,
     setField,
     handleInputChange,
     reset,
-    errors,
+    errors: formErrors,
     isDirty,
     setIsDirty,
     isBusy,
     setIsBusy,
     step,
-    setStep
+    setStep,
+    validate
   };
 }
