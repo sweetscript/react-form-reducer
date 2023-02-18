@@ -101,6 +101,7 @@ const useFormErrors = () => {
 function useForm(defaultValues, options) {
   const errors = useFormErrors();
   const [isDirty, setIsDirty] = useState(false);
+  const [isBusy, setIsBusy] = useState(false);
   const [step, setStep] = useState(1);
   const {
     onUpdateFields
@@ -115,6 +116,9 @@ function useForm(defaultValues, options) {
   }, defaultValues);
   // Fields state setters
   const setFields = (values, setDirty = true) => {
+    if (onUpdateFields) {
+      values = onUpdateFields(values);
+    }
     updateFields(values);
     setIsDirty(setDirty);
   };
@@ -123,17 +127,28 @@ function useForm(defaultValues, options) {
     v[name] = value;
     setFields(v, true);
   };
+  const handleInputChange = name => event => {
+    const target = event.currentTarget || event.target;
+    if (target.getAttribute('type') == '') {
+      setField(name, target instanceof HTMLInputElement && target.checked);
+    } else {
+      setField(name, target.value);
+    }
+  };
   const reset = () => {
-    setFields(defaultValues);
+    setFields(defaultValues, false);
   };
   return {
     fields,
     setFields,
     setField,
+    handleInputChange,
     reset,
     errors,
     isDirty,
     setIsDirty,
+    isBusy,
+    setIsBusy,
     step,
     setStep
   };

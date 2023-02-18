@@ -1,4 +1,4 @@
-import { useReducer, useState } from 'react';
+import { ChangeEventHandler, useReducer, useState } from 'react';
 import useFormErrors from './useFormErrors';
 import { FormHookType, UseFormOptions } from '../types';
 
@@ -14,7 +14,7 @@ export default function useForm<T>(
   const errors = useFormErrors();
 
   const [isDirty, setIsDirty] = useState<boolean>(false);
-
+  const [isBusy, setIsBusy] = useState<boolean>(false);
   const [step, setStep] = useState<number>(1);
 
   const { onUpdateFields } = options || {};
@@ -30,6 +30,9 @@ export default function useForm<T>(
 
   // Fields state setters
   const setFields = (values: Partial<T>, setDirty = true) => {
+    if (onUpdateFields) {
+      values = onUpdateFields(values as T);
+    }
     updateFields(values);
     setIsDirty(setDirty);
   };
@@ -38,18 +41,35 @@ export default function useForm<T>(
     v[name as string] = value;
     setFields(v as Partial<T>, true);
   };
+  const handleInputChange =
+    (
+      name: keyof T
+    ): ChangeEventHandler<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    > =>
+    (event) => {
+      const target = event.currentTarget || event.target;
+      if (target.getAttribute('type') == '') {
+        setField(name, target instanceof HTMLInputElement && target.checked);
+      } else {
+        setField(name, target.value);
+      }
+    };
   const reset = () => {
-    setFields(defaultValues);
+    setFields(defaultValues, false);
   };
 
   return {
     fields,
     setFields,
     setField,
+    handleInputChange,
     reset,
     errors,
     isDirty,
     setIsDirty,
+    isBusy,
+    setIsBusy,
     step,
     setStep
   };

@@ -105,9 +105,12 @@ function useForm(defaultValues, options) {
   var _useState = react.useState(false),
     isDirty = _useState[0],
     setIsDirty = _useState[1];
-  var _useState2 = react.useState(1),
-    step = _useState2[0],
-    setStep = _useState2[1];
+  var _useState2 = react.useState(false),
+    isBusy = _useState2[0],
+    setIsBusy = _useState2[1];
+  var _useState3 = react.useState(1),
+    step = _useState3[0],
+    setStep = _useState3[1];
   var _ref = options || {},
     onUpdateFields = _ref.onUpdateFields;
   // Fields state
@@ -125,6 +128,9 @@ function useForm(defaultValues, options) {
     if (setDirty === void 0) {
       setDirty = true;
     }
+    if (onUpdateFields) {
+      values = onUpdateFields(values);
+    }
     updateFields(values);
     setIsDirty(setDirty);
   };
@@ -133,17 +139,30 @@ function useForm(defaultValues, options) {
     v[name] = value;
     setFields(v, true);
   };
+  var handleInputChange = function handleInputChange(name) {
+    return function (event) {
+      var target = event.currentTarget || event.target;
+      if (target.getAttribute('type') == '') {
+        setField(name, target instanceof HTMLInputElement && target.checked);
+      } else {
+        setField(name, target.value);
+      }
+    };
+  };
   var reset = function reset() {
-    setFields(defaultValues);
+    setFields(defaultValues, false);
   };
   return {
     fields: fields,
     setFields: setFields,
     setField: setField,
+    handleInputChange: handleInputChange,
     reset: reset,
     errors: errors,
     isDirty: isDirty,
     setIsDirty: setIsDirty,
+    isBusy: isBusy,
+    setIsBusy: setIsBusy,
     step: step,
     setStep: setStep
   };

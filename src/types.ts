@@ -1,13 +1,20 @@
-import React from 'react';
+import React, { ChangeEventHandler } from 'react';
 
 export interface FormHookType<R> {
   fields: R;
   setFields: (fields: R) => void;
   setField: (name: keyof R, value: unknown) => void;
+  handleInputChange: (
+    name: keyof R
+  ) => ChangeEventHandler<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >;
   step: number;
   setStep: React.Dispatch<React.SetStateAction<number>>;
   isDirty: boolean;
   setIsDirty: React.Dispatch<React.SetStateAction<boolean>>;
+  isBusy: boolean;
+  setIsBusy: React.Dispatch<React.SetStateAction<boolean>>;
   reset: () => void;
   errors: FormErrorsProps;
 }
