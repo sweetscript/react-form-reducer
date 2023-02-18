@@ -1,7 +1,7 @@
 import { ChangeEventHandler, useReducer, useState } from 'react';
 import useFormErrors from './useFormErrors';
 import { FormHookType, UseFormOptions } from '../types';
-import Validator, { ErrorMessages, Rules } from 'validatorjs';
+import Validator, { Rules } from 'validatorjs';
 
 /**
  * This is the form state hook
@@ -17,10 +17,6 @@ export default function useForm<T>(
   const [isDirty, setIsDirty] = useState<boolean>(false);
   const [isBusy, setIsBusy] = useState<boolean>(false);
   const [step, setStep] = useState<number>(1);
-  const [validationRules] = useState<Rules>(options?.validationRules || {});
-  const [validationMessages] = useState<ErrorMessages>(
-    options?.validationMessages || {}
-  );
 
   const { onUpdateFields } = options || {};
 
@@ -71,20 +67,26 @@ export default function useForm<T>(
   };
 
   // Validation logic
-  function validate(fieldsToCheck: Array<keyof T>) {
+  function validate(fieldsToCheck?: Array<keyof T>) {
+    let rules: { [key: string]: unknown } = options?.validationRules || {};
     let validateFields: { [key: string]: unknown } = fields;
     if (fieldsToCheck) {
       validateFields = {};
+      const fieldRules: { [key: string]: unknown } = {};
       for (const fieldKey in fields) {
-        if (fieldsToCheck.indexOf(fieldKey)) {
+        if (fieldsToCheck.indexOf(fieldKey) !== -1) {
           validateFields[fieldKey] = fields[fieldKey];
+          if (rules[fieldKey]) {
+            fieldRules[fieldKey] = rules[fieldKey];
+          }
         }
       }
+      rules = fieldRules;
     }
     const validation = new Validator(
       validateFields,
-      validationRules,
-      validationMessages
+      rules as Rules,
+      options?.validationMessages
     );
     const pass = validation.passes();
     if (pass) return true;

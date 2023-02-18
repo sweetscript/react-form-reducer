@@ -13,7 +13,7 @@ export interface FormHookType<R> {
     setIsBusy: React.Dispatch<React.SetStateAction<boolean>>;
     reset: () => void;
     errors: FormErrorsProps;
-    validate: (fields?: Array<keyof R>) => boolean;
+    validate: (fieldsToCheck?: Array<keyof R>) => boolean;
 }
 export type FormContextType<R> = FormHookType<R>;
 export type UseFormOptions<T> = {

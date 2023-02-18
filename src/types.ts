@@ -21,7 +21,7 @@ export interface FormHookType<R> {
   errors: FormErrorsProps;
 
   // Validation
-  validate: (fields?: Array<keyof R>) => boolean;
+  validate: (fieldsToCheck?: Array<keyof R>) => boolean;
 
   // meta: M;
   // setAllMeta: (metaData: M) => void;
