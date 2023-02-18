@@ -49,7 +49,8 @@ export default function useForm<T>(
     > =>
     (event) => {
       const target = event.currentTarget || event.target;
-      if (target.getAttribute('type') == '') {
+      const targetType = target.getAttribute('type') || 'text';
+      if (['checkbox', 'radio'].indexOf(targetType) !== -1) {
         setField(name, target instanceof HTMLInputElement && target.checked);
       } else {
         setField(name, target.value);

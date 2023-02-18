@@ -15,7 +15,7 @@ export interface FormHookType<R> {
 }
 export type FormContextType<R> = FormHookType<R>;
 export type UseFormOptions<T> = {
-    onUpdateFields: (fields: T) => T;
+    onUpdateFields?: (fields: T) => T;
 };
 export type Errors = {
     [key: string]: string[];
