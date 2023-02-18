@@ -19,12 +19,16 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "react"
+    "react",
+    "form",
+    "reducer",
+    "validatorjs",
+    "context"
   ],
   "author": "Majid Kuhail <majid@sweetscript.com>",
   "license": "MIT",
   "peerDependencies": {
-    "react": "^18.2.0"
+    "react": "^16.0.0 || ^17.0.0 || ^18.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",
@@ -45,5 +49,13 @@
   ],
   "dependencies": {
     "validatorjs": "^3.22.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sweetscript/react-form-reducer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sweetscript/react-form-reducer/issues",
+    "email": "majid@sweetscript.com"
   }
 }
