@@ -15,7 +15,7 @@ export function FormContextProvider<T>({
 }: {
   children: ReactNode;
   defaultValues: T;
-  options: UseFormOptions<T>;
+  options?: UseFormOptions<T>;
 }) {
   const formInstance = useForm<T>(defaultValues, options);
 
