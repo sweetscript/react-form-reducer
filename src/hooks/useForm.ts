@@ -49,6 +49,9 @@ export default function useForm<IFields, IMeta = never>(
     //Clear field error if present
     formErrors.forget(name as string);
   };
+  const reset = () => {
+    setFields(defaultValues, false);
+  };
   const handleInputChange =
     (
       name: keyof IFields
@@ -66,8 +69,19 @@ export default function useForm<IFields, IMeta = never>(
         setField(name, target.value);
       }
     };
-  const reset = () => {
-    setFields(defaultValues, false);
+  const assignFieldInput = (name: keyof IFields) => {
+    return {
+      onChange: handleInputChange(name),
+      value: fields?.[name],
+      disabled: isBusy
+    };
+  };
+  const assignFieldUI = (name: keyof IFields) => {
+    return {
+      ...assignFieldInput(name),
+      error: formErrors.has(name),
+      helperText: formErrors.get(name)
+    };
   };
 
   // Meta state setters
@@ -100,6 +114,8 @@ export default function useForm<IFields, IMeta = never>(
     setFields,
     setField,
     handleInputChange,
+    assignFieldInput,
+    assignFieldUI,
     reset,
     errors: formErrors,
     isDirty,

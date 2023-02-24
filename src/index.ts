@@ -8,5 +8,7 @@ export {
   FormErrorsProps,
   FormContextType,
   FormHookType,
-  Errors
+  Errors,
+  AssignFieldInput,
+  AssignFieldUI
 } from './types';

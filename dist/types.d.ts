@@ -1,9 +1,11 @@
 import { ChangeEventHandler, Dispatch, SetStateAction } from 'react';
-export interface FormHookType<IField, IMeta = never> {
-    fields: IField;
-    setFields: (fields: IField) => void;
-    setField: (name: keyof IField, value: unknown) => void;
-    handleInputChange: (name: keyof IField) => ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>;
+export interface FormHookType<IFields, IMeta = never> {
+    fields: IFields;
+    setFields: (fields: IFields) => void;
+    setField: (name: keyof IFields, value: unknown) => void;
+    handleInputChange: (name: keyof IFields) => ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>;
+    assignFieldInput: (name: keyof IFields) => AssignFieldInput;
+    assignFieldUI: (name: keyof IFields) => AssignFieldUI;
     step: number;
     setStep: Dispatch<SetStateAction<number>>;
     isDirty: boolean;
@@ -12,7 +14,7 @@ export interface FormHookType<IField, IMeta = never> {
     setIsBusy: Dispatch<SetStateAction<boolean>>;
     reset: () => void;
     errors: FormErrorsProps;
-    validate: (fieldsToCheck?: Array<keyof IField>) => Promise<FormValidateResponse>;
+    validate: (fieldsToCheck?: Array<keyof IFields>) => Promise<FormValidateResponse>;
     meta: IMeta;
     setAllMeta: (metaData: IMeta) => void;
     setMeta: (name: keyof IMeta, value: unknown) => void;
@@ -29,17 +31,26 @@ export type FormValidateResponse = {
 export type Errors = {
     [key: string]: string[];
 };
-export type FormErrorsProps = {
+export type FormErrorsProps<IFields = never> = {
     errors?: Errors;
-    has: (field: string) => boolean;
+    has: (field: keyof IFields | string) => boolean;
     hasErrors: () => boolean;
-    get: (field: string) => any;
-    first: (field: string) => string | false;
+    get: (field: keyof IFields | string) => any;
+    first: (field: keyof IFields | string) => keyof IFields | string | false;
     all: () => Errors;
-    add: (field: string, message: string) => void;
+    add: (field: keyof IFields | string, message: keyof IFields | string) => void;
     set: (errors: Errors) => void;
-    forget: (field?: string) => void;
+    forget: (field?: keyof IFields | string) => void;
 };
 export declare abstract class ValidationResolver<T> {
     abstract validate(data: T, fieldsToCheck?: Array<keyof T>): true | Errors;
 }
+export type AssignFieldInput = {
+    onChange: ChangeEventHandler<HTMLElement>;
+    value: any;
+    disabled: boolean;
+};
+export type AssignFieldUI = AssignFieldInput & {
+    error?: boolean;
+    helperText?: boolean;
+};
