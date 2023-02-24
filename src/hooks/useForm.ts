@@ -6,12 +6,14 @@ import { FormHookType, UseFormOptions } from '../types';
  * This is the form state hook
  * @param defaultValues
  * @param options
+ * @param defaultMeta
  */
-export default function useForm<T>(
-  defaultValues: T,
-  options?: UseFormOptions<T>
-): FormHookType<T> {
-  const formErrors = useFormErrors();
+export default function useForm<IFields, IMeta = never>(
+  defaultValues: IFields,
+  options?: UseFormOptions<IFields>,
+  defaultMeta?: IMeta
+): FormHookType<IFields, IMeta> {
+  const formErrors = useFormErrors<IFields>();
 
   const [isDirty, setIsDirty] = useState<boolean>(false);
   const [isBusy, setIsBusy] = useState<boolean>(false);
@@ -20,33 +22,39 @@ export default function useForm<T>(
   const { onUpdateFields } = options || {};
 
   // Fields state
-  const [fields, updateFields] = useReducer((prev: T, next: Partial<T>) => {
-    let newFields = { ...prev, ...next };
-    if (onUpdateFields) {
-      newFields = onUpdateFields(newFields);
-    }
-    return newFields;
-  }, defaultValues);
+  const [fields, updateFields] = useReducer(
+    (prev: IFields, next: Partial<IFields>) => {
+      return { ...prev, ...next };
+    },
+    defaultValues
+  );
+  // Meta state
+  const [meta, updateMeta] = useReducer((prev: IMeta, next: Partial<IMeta>) => {
+    return { ...prev, ...next };
+  }, defaultMeta as IMeta);
 
   // Fields state setters
-  const setFields = (values: Partial<T>, setDirty = true) => {
+  const setFields = (values: Partial<IFields>, setDirty = true) => {
     if (onUpdateFields) {
-      values = onUpdateFields(values as T);
+      values = onUpdateFields(values as IFields);
     }
     updateFields(values);
     setIsDirty(setDirty);
   };
-  const setField = (name: keyof T, value: unknown) => {
+  const setField = (name: keyof IFields, value: unknown) => {
     const v: { [key: string]: unknown } = {};
     v[name as string] = value;
-    setFields(v as Partial<T>, true);
+    setFields(v as Partial<IFields>, true);
 
     //Clear field error if present
     formErrors.forget(name as string);
   };
+  const reset = () => {
+    setFields(defaultValues, false);
+  };
   const handleInputChange =
     (
-      name: keyof T
+      name: keyof IFields
     ): ChangeEventHandler<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     > =>
@@ -61,12 +69,33 @@ export default function useForm<T>(
         setField(name, target.value);
       }
     };
-  const reset = () => {
-    setFields(defaultValues, false);
+  const assignFieldInput = (name: keyof IFields) => {
+    return {
+      onChange: handleInputChange(name),
+      value: fields?.[name],
+      disabled: isBusy
+    };
+  };
+  const assignFieldUI = (name: keyof IFields) => {
+    return {
+      ...assignFieldInput(name),
+      error: formErrors.has(name),
+      helperText: formErrors.get(name)
+    };
+  };
+
+  // Meta state setters
+  const setAllMeta = (values: Partial<IMeta>) => {
+    updateMeta(values);
+  };
+  const setMeta = (name: keyof IMeta, value: unknown) => {
+    const v: { [key: string]: unknown } = {};
+    v[name as string] = value;
+    setAllMeta(v as Partial<IMeta>);
   };
 
   // Validation logic
-  const validate = async (fieldsToCheck?: Array<keyof T>) => {
+  const validate = async (fieldsToCheck?: Array<keyof IFields>) => {
     const resolver = options?.validation;
     if (!resolver) {
       throw new Error('No validator resolver passed');
@@ -85,6 +114,8 @@ export default function useForm<T>(
     setFields,
     setField,
     handleInputChange,
+    assignFieldInput,
+    assignFieldUI,
     reset,
     errors: formErrors,
     isDirty,
@@ -93,6 +124,10 @@ export default function useForm<T>(
     setIsBusy,
     step,
     setStep,
-    validate
+    validate,
+
+    meta,
+    setAllMeta,
+    setMeta
   };
 }
