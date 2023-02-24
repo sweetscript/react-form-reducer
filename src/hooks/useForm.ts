@@ -1,7 +1,6 @@
 import { ChangeEventHandler, useReducer, useState } from 'react';
 import useFormErrors from './useFormErrors';
 import { FormHookType, UseFormOptions } from '../types';
-import Validator, { Rules } from 'validatorjs';
 
 /**
  * This is the form state hook
@@ -67,33 +66,19 @@ export default function useForm<T>(
   };
 
   // Validation logic
-  function validate(fieldsToCheck?: Array<keyof T>) {
-    let rules: { [key: string]: unknown } = options?.validationRules || {};
-    let validateFields: { [key: string]: unknown } = fields;
-    if (fieldsToCheck) {
-      validateFields = {};
-      const fieldRules: { [key: string]: unknown } = {};
-      for (const fieldKey in fields) {
-        if (fieldsToCheck.indexOf(fieldKey) !== -1) {
-          validateFields[fieldKey] = fields[fieldKey];
-          if (rules[fieldKey]) {
-            fieldRules[fieldKey] = rules[fieldKey];
-          }
-        }
-      }
-      rules = fieldRules;
+  const validate = async (fieldsToCheck?: Array<keyof T>) => {
+    const resolver = options?.validation;
+    if (!resolver) {
+      throw new Error('No validator resolver passed');
     }
-    const validation = new Validator(
-      validateFields,
-      rules as Rules,
-      options?.validationMessages
-    );
-    const pass = validation.passes();
-    if (pass) return true;
-    const errors = validation.errors.all();
-    formErrors.set(errors);
-    return false;
-  }
+    const valid = resolver.validate(fields, fieldsToCheck);
+    if (valid == true) {
+      return { passed: true };
+    }
+
+    formErrors.set(valid);
+    return { passed: false, error: valid };
+  };
 
   return {
     fields,
