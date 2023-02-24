@@ -1,5 +1,4 @@
 import React, { ChangeEventHandler } from 'react';
-import { ErrorMessages, Rules } from 'validatorjs';
 
 // export interface FormHookType<R, M = never> {
 export interface FormHookType<R> {
@@ -21,7 +20,7 @@ export interface FormHookType<R> {
   errors: FormErrorsProps;
 
   // Validation
-  validate: (fieldsToCheck?: Array<keyof R>) => boolean;
+  validate: (fieldsToCheck?: Array<keyof R>) => Promise<FormValidateResponse>;
 
   // meta: M;
   // setAllMeta: (metaData: M) => void;
@@ -33,10 +32,10 @@ export type FormContextType<R> = FormHookType<R>;
 export type UseFormOptions<T> = {
   onUpdateFields?: (fields: T) => T;
 
-  validationRules?: Rules;
-
-  validationMessages?: ErrorMessages;
+  validation?: ValidationResolver<T>;
 };
+
+export type FormValidateResponse = { passed: boolean; errors?: Errors };
 
 export type Errors = { [key: string]: string[] };
 
@@ -55,3 +54,7 @@ export type FormErrorsProps = {
   set: (errors: Errors) => void;
   forget: (field?: string) => void;
 };
+
+export abstract class ValidationResolver<T> {
+  abstract validate(data: T, fieldsToCheck?: Array<keyof T>): true | Errors;
+}
