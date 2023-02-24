@@ -1,6 +1,6 @@
 {
   "name": "react-form-reducer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A utility of React hooks and contexts to provide simpler form field management, in addition to support of frontend validation and backend validation error processing",
   "type": "module",
   "source": "src/index.ts",
