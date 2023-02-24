@@ -1,38 +1,40 @@
-import React, { ChangeEventHandler } from 'react';
+import { ChangeEventHandler, Dispatch, SetStateAction } from 'react';
 
 // export interface FormHookType<R, M = never> {
-export interface FormHookType<R> {
-  fields: R;
-  setFields: (fields: R) => void;
-  setField: (name: keyof R, value: unknown) => void;
+export interface FormHookType<IField, IMeta = never> {
+  fields: IField;
+  setFields: (fields: IField) => void;
+  setField: (name: keyof IField, value: unknown) => void;
   handleInputChange: (
-    name: keyof R
+    name: keyof IField
   ) => ChangeEventHandler<
     HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
   >;
   step: number;
-  setStep: React.Dispatch<React.SetStateAction<number>>;
+  setStep: Dispatch<SetStateAction<number>>;
   isDirty: boolean;
-  setIsDirty: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsDirty: Dispatch<SetStateAction<boolean>>;
   isBusy: boolean;
-  setIsBusy: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsBusy: Dispatch<SetStateAction<boolean>>;
   reset: () => void;
   errors: FormErrorsProps;
 
   // Validation
-  validate: (fieldsToCheck?: Array<keyof R>) => Promise<FormValidateResponse>;
+  validate: (
+    fieldsToCheck?: Array<keyof IField>
+  ) => Promise<FormValidateResponse>;
 
-  // meta: M;
-  // setAllMeta: (metaData: M) => void;
-  // setMeta: (name: keyof M, value: unknown) => void;
+  meta: IMeta;
+  setAllMeta: (metaData: IMeta) => void;
+  setMeta: (name: keyof IMeta, value: unknown) => void;
 }
 
 export type FormContextType<R> = FormHookType<R>;
 
-export type UseFormOptions<T> = {
-  onUpdateFields?: (fields: T) => T;
+export type UseFormOptions<IFields> = {
+  onUpdateFields?: (fields: IFields) => IFields;
 
-  validation?: ValidationResolver<T>;
+  validation?: ValidationResolver<IFields>;
 };
 
 export type FormValidateResponse = { passed: boolean; errors?: Errors };
