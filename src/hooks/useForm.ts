@@ -13,7 +13,7 @@ export default function useForm<IFields, IMeta = never>(
   options?: UseFormOptions<IFields>,
   defaultMeta?: IMeta
 ): FormHookType<IFields, IMeta> {
-  const formErrors = useFormErrors();
+  const formErrors = useFormErrors<IFields>();
 
   const [isDirty, setIsDirty] = useState<boolean>(false);
   const [isBusy, setIsBusy] = useState<boolean>(false);

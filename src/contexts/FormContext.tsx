@@ -4,22 +4,30 @@ import useForm from '../hooks/useForm';
 
 const _FormContext = createContext<object>({});
 
-export function FormContext<T>(): Context<FormContextType<T>> {
-  return _FormContext as Context<FormContextType<T>>;
+export function FormContext<IFields, IMeta = never>(): Context<
+  FormContextType<IFields, IMeta>
+> {
+  return _FormContext as Context<FormContextType<IFields, IMeta>>;
 }
 
-export function FormContextProvider<T>({
+export function FormContextProvider<IFields, IMeta = never>({
   children,
   defaultValues,
-  options
+  options,
+  defaultMeta
 }: {
   children: ReactNode;
-  defaultValues: T;
-  options?: UseFormOptions<T>;
+  defaultValues: IFields;
+  options?: UseFormOptions<IFields>;
+  defaultMeta?: IMeta;
 }) {
-  const formInstance = useForm<T>(defaultValues, options);
+  const formInstance = useForm<IFields, IMeta>(
+    defaultValues,
+    options,
+    defaultMeta
+  );
 
-  const Context = FormContext<T>();
+  const Context = FormContext<IFields, IMeta>();
 
   return <Context.Provider value={formInstance}>{children}</Context.Provider>;
 }

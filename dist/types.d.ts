@@ -17,7 +17,7 @@ export interface FormHookType<IField, IMeta = never> {
     setAllMeta: (metaData: IMeta) => void;
     setMeta: (name: keyof IMeta, value: unknown) => void;
 }
-export type FormContextType<R> = FormHookType<R>;
+export type FormContextType<IFields, IMeta = never> = FormHookType<IFields, IMeta>;
 export type UseFormOptions<IFields> = {
     onUpdateFields?: (fields: IFields) => IFields;
     validation?: ValidationResolver<IFields>;

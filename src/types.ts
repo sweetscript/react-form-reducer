@@ -29,7 +29,10 @@ export interface FormHookType<IField, IMeta = never> {
   setMeta: (name: keyof IMeta, value: unknown) => void;
 }
 
-export type FormContextType<R> = FormHookType<R>;
+export type FormContextType<IFields, IMeta = never> = FormHookType<
+  IFields,
+  IMeta
+>;
 
 export type UseFormOptions<IFields> = {
   onUpdateFields?: (fields: IFields) => IFields;
@@ -41,21 +44,25 @@ export type FormValidateResponse = { passed: boolean; errors?: Errors };
 
 export type Errors = { [key: string]: string[] };
 
-export type FormErrorsProps = {
-  errors?: Errors;
+export type FormErrorsProps<IFields extends { [key: string]: never } = never> =
+  {
+    errors?: Errors;
 
-  //GETTERS
-  has: (field: string) => boolean;
-  hasErrors: () => boolean;
-  get: (field: string) => any;
-  first: (field: string) => string | false;
-  all: () => Errors;
+    //GETTERS
+    has: (field: keyof IFields | string) => boolean;
+    hasErrors: () => boolean;
+    get: (field: keyof IFields | string) => any;
+    first: (field: keyof IFields | string) => keyof IFields | string | false;
+    all: () => Errors;
 
-  //SETTERS
-  add: (field: string, message: string) => void;
-  set: (errors: Errors) => void;
-  forget: (field?: string) => void;
-};
+    //SETTERS
+    add: (
+      field: keyof IFields | string,
+      message: keyof IFields | string
+    ) => void;
+    set: (errors: Errors) => void;
+    forget: (field?: keyof IFields | string) => void;
+  };
 
 export abstract class ValidationResolver<T> {
   abstract validate(data: T, fieldsToCheck?: Array<keyof T>): true | Errors;
