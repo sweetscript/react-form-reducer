@@ -80,7 +80,7 @@ export default function useForm<IFields, IMeta = never>(
     return {
       ...assignFieldInput(name),
       error: formErrors.has(name),
-      helperText: formErrors.get(name)
+      helperText: formErrors.first(name) || undefined
     };
   };
 

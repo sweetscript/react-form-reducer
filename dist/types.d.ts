@@ -36,7 +36,7 @@ export type FormErrorsProps<IFields = never> = {
     has: (field: keyof IFields | string) => boolean;
     hasErrors: () => boolean;
     get: (field: keyof IFields | string) => any;
-    first: (field: keyof IFields | string) => keyof IFields | string | false;
+    first: (field: keyof IFields | string) => string | null;
     all: () => Errors;
     add: (field: keyof IFields | string, message: keyof IFields | string) => void;
     set: (errors: Errors) => void;
@@ -52,5 +52,5 @@ export type AssignFieldInput = {
 };
 export type AssignFieldUI = AssignFieldInput & {
     error?: boolean;
-    helperText?: boolean;
+    helperText?: string;
 };
