@@ -36,24 +36,24 @@ const MyComponent = ()=>{
     name: '', // Default values
     email: ''
   })
-  
+
   return (
-    <form>
-      <div>
-        <label>Name:</label>
-        <input
-          type="text"
-          {...assignFieldInput('name')}
-        />
-      </div>
-      <div>
-        <label>Email:</label>
-        <input
-          type="email"
-          {...assignFieldInput('email')}
-        />
-      </div>
-    </form>
+          <form>
+            <div>
+              <label>Name:</label>
+              <input
+                      type="text"
+                      {...assignFieldInput('name')}
+              />
+            </div>
+            <div>
+              <label>Email:</label>
+              <input
+                      type="email"
+                      {...assignFieldInput('email')}
+              />
+            </div>
+          </form>
   )
 }
 
@@ -125,7 +125,7 @@ const {
   validate,
 
   // Validation errors = useFormErrors()
-  errors,
+  errors
 
 } = useForm<
 	MyFormInterface,
@@ -136,16 +136,14 @@ const {
 
 },
 {
-
-  //here goes the options // optional
+  // here goes the options // optional
   onUpdateFields: (data)=> {} //optional config
   validation: new Resolver //optional config
-
 },
 { 
   //meta default values // optional, only if you wish to use the meta state
   metafield: 'default',
-	....
+  ....
 });
 ```
 
@@ -254,7 +252,7 @@ The context provider and hook are helpful for when sharing the form state betwee
 
 1. ### Setting up provider context
 
-```
+```tsx
 const WrapperComponent = ()=>{
   const FormProvider = FormContextProvider<MyFormInterface>;
   return (
@@ -283,7 +281,8 @@ const WrapperComponent = ()=>{
 
 2. ### Usage of `useFormContext`
    This hook will return the same properties as `useHoo`k, just make sure you call this hook inside the context provider you setup before:
-```
+
+```tsx
 const MyFormComponent = ()=>{
   // This can be called on any child components under the context provider
   const { fields } = useFormContext<MyFormInterface>();
@@ -292,11 +291,55 @@ const MyFormComponent = ()=>{
 }
 ```
 
+
 ---
+
 
 ## `useFormErrors` a hook that handles errors
 
-This hooks is provided as a property in the previous hooks, but can also be used on its own.
+This hooks is provided as the `error` property in the previous hooks, but can also be used on its own.
+
+```tsx
+const errors = useFormErrors();
+
+// Sets error messages
+errors.set(data);
+
+// Add error message for field
+errors.add('field_name', 'Invalid value');
+
+// Check if errors exist for field
+error.has('field_name');
+
+// Returns the array of error messages for field
+error.get('field_name');
+
+
+// Returns the first error messages for field
+error.first('field_name');
+
+// Clears error messages for field;
+error.forget('field_name');
+
+
+// Clears all error messages
+error.forget();
+```
+
+The error messages should follow the `Errors` type exported by the package, an example of a valid error data:
+
+```tsx
+{
+  'name: [
+    'This field is required'
+  ],
+  'password': [
+    'Password should be at least 6 characters',
+	'No whitespace allowed'
+  ]
+}
+```
+
 
 ## Validation
 
@@ -321,44 +364,44 @@ type MyValidatedFormType = {
 };
 
 export function ValidatedForm() {
-  const { 
+  const {
     fields,
-    handleInputChange, 
+    handleInputChange,
     validate,
     errors
   } = useForm<MyValidatedFormType>(
-    {
-        name: '',
-        email: '',
-        password: '',
-        password_confirmation: '',
-        terms: false
-    },
-    {
-        validation: new Resolver(
           {
-            name: 'required',
-            email: 'required|email',
-            password: 'required',
-            password_confirmation: 'required|same:password',
-            terms: 'accepted'
+            name: '',
+            email: '',
+            password: '',
+            password_confirmation: '',
+            terms: false
           },
           {
-            'accepted.terms': 'Please accept the :attribute',
-            'same.password_confirmation': "Passwords don't match"
+            validation: new Resolver(
+                    {
+                      name: 'required',
+                      email: 'required|email',
+                      password: 'required',
+                      password_confirmation: 'required|same:password',
+                      terms: 'accepted'
+                    },
+                    {
+                      'accepted.terms': 'Please accept the :attribute',
+                      'same.password_confirmation': "Passwords don't match"
+                    }
+            )
           }
-        )
-      }
-    );
+  );
 
 
-    const handleSubmit = async ()=>{
-      const { passed } = await validate()
+  const handleSubmit = async ()=>{
+    const { passed } = await validate()
 
-      if(!passed){
-        // throw error
-      }
+    if(!passed){
+      // throw error
     }
+  }
 }
 
 ```

@@ -40,7 +40,7 @@ export default function useFormErrors<
   instance.first = (field: string | keyof IFields) => {
     return instance.has(field as string)
       ? errors?.[field as string]?.[0]
-      : false;
+      : null;
   };
 
   /**
