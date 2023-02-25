@@ -38,22 +38,22 @@ const MyComponent = ()=>{
   })
 
   return (
-          <form>
-            <div>
-              <label>Name:</label>
-              <input
-                      type="text"
-                      {...assignFieldInput('name')}
-              />
-            </div>
-            <div>
-              <label>Email:</label>
-              <input
-                      type="email"
-                      {...assignFieldInput('email')}
-              />
-            </div>
-          </form>
+    <form>
+      <div>
+        <label>Name:</label>
+        <input
+          type="text"
+          {...assignFieldInput('name')}
+        />
+      </div>
+      <div>
+        <label>Email:</label>
+        <input
+          type="email"
+          {...assignFieldInput('email')}
+        />
+      </div>
+    </form>
   )
 }
 
@@ -128,8 +128,8 @@ const {
   errors
 
 } = useForm<
-	MyFormInterface,
-	MyMetaInterface //optional, only required if you use the meta state
+  MyFormInterface,
+  MyMetaInterface //optional, only required if you use the meta state
 >({
 
   ...default values go here
@@ -335,7 +335,7 @@ The error messages should follow the `Errors` type exported by the package, an e
   ],
   'password': [
     'Password should be at least 6 characters',
-	'No whitespace allowed'
+    'No whitespace allowed'
   ]
 }
 ```
@@ -370,28 +370,30 @@ export function ValidatedForm() {
     validate,
     errors
   } = useForm<MyValidatedFormType>(
-          {
-            name: '',
-            email: '',
-            password: '',
-            password_confirmation: '',
-            terms: false
-          },
-          {
-            validation: new Resolver(
-                    {
-                      name: 'required',
-                      email: 'required|email',
-                      password: 'required',
-                      password_confirmation: 'required|same:password',
-                      terms: 'accepted'
-                    },
-                    {
-                      'accepted.terms': 'Please accept the :attribute',
-                      'same.password_confirmation': "Passwords don't match"
-                    }
-            )
-          }
+    {
+      name: '',
+      email: '',
+      password: '',
+      password_confirmation: '',
+      terms: false
+    },
+    {
+      validation: new Resolver(
+      	{
+	  // Validation rules
+          name: 'required',
+          email: 'required|email',
+          password: 'required',
+          password_confirmation: 'required|same:password',
+          terms: 'accepted'
+        },
+        {
+	  // Custom messages
+          'accepted.terms': 'Please accept the :attribute',
+          'same.password_confirmation': "Passwords don't match"
+        }
+      )
+    }
   );
 
 
