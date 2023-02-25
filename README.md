@@ -1,8 +1,8 @@
-# React-Form-Reducer
+# React-Form-Reducer 💫
 
 A utility of React hooks and a context that provide a simpler form field management, in addition to support of frontend validation and backend validation error processing. The library uses the React built-in reducers and context with no dependencies to achieve a typescript oriented way of managing form state efficiently and heling developers with autosuggestion of form fields in both setters and getters.
 
-	> This package works best with **TypeScript**
+	> This package works best with TypeScript
 
 ![npm](https://img.shields.io/npm/v/react-form-reducer)
 ![Snyk Vulnerabilities for npm package version](https://img.shields.io/snyk/vulnerabilities/npm/react-form-reducer)
@@ -64,7 +64,7 @@ export default MyComponent;
 
 ## Examples
 
-### Simple Form:
+### 1. Simple Form:
 
 Example using `useHook`
 
@@ -75,6 +75,16 @@ Example using `useHook`
 Example using `FormContextProvider` and `useFormContext`
 
 > [![Edit react-form-reducer--stepped-demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/react-form-reducer--stepped-demo-u78iqp?fontsize=12&hidenavigation=1&module=%2Fsrc%2Fsteps%2FMyForm.tsx&theme=dark)
+
+
+### 3. Simple Validation Form
+
+> [![Edit react-form-reducer--validation-demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/react-form-reducer--validation-demo-vmhtdr?fontsize=12&hidenavigation=1&module=%2Fsrc%2FApp.tsx&theme=dark)
+
+### 4. Partial validation in a context form (stepped form)
+
+> [![Edit react-form-reducer--stepped-validation-demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/react-form-reducer--stepped-validation-demo-gkehzf?autoresize=1&fontsize=12&hidenavigation=1&module=%2Fsrc%2Fsteps%2FMyForm.tsx&theme=dark)
+
 
 ---
 
@@ -106,24 +116,137 @@ const {
   step,
   setStep,
 
-  // Validation errors = useFormErrors()
-  errors,
-  // Validate trigger
-  validate,
-
   //  Meta Data State
   meta,
   setMeta,
   setAllMeta
-} = useForm<MyFormInterface>({
+
+  // Validate trigger
+  validate,
+
+  // Validation errors = useFormErrors()
+  errors,
+
+} = useForm<
+	MyFormInterface,
+	MyMetaInterface //optional, only required if you use the meta state
+>({
+
   ...default values go here
-}, {
+
+},
+{
+
+  //here goes the options // optional
   onUpdateFields: (data)=> {} //optional config
   validation: new Resolver //optional config
+
+},
+{ 
+  //meta default values // optional, only if you wish to use the meta state
+  metafield: 'default',
+	....
 });
 ```
 
-___
+### Properties  of `useHook` & `useFormContext`
+
+- #### `fields`
+
+  The state object of form body ()
+
+
+- #### `setField('name', value)`
+
+  This can be used to sets a field value by name
+
+
+- #### `setFields(data, isDirty?: boolean = true)`
+
+  This can be used to sets all the fields values at once
+
+  > If you wish set a few values only instead of all field values do the following:
+
+  > `setFields({...fields, name: 'Jane', surname: 'Doe'})`
+
+
+- #### `handleInputChange('name')`
+
+  This can be used to directly handle ChangeEvents on HTML form elements, and automaticly assign the new values to the fields.
+
+
+- #### `assignFieldInput('name')`
+
+  This can be used to directly assign all usefull attributes to HTML form elements (input,textarea,select), this function will return an object with values for element attribute: `value`, `onChange` and `disabled`, so it can be simply used this way on an input:
+  ```
+  <input
+    type="text"
+    {...assignFieldInput("email")}
+  />
+  ```
+
+
+- #### `assignFieldUI('name')`
+
+  This is similar to `assignFieldInput` but returns additional properties `error` & `helperText`, this is usefull for UI components that support those properties like MUI and :
+  ```
+  <TextField
+    {... assignFieldUI("email")}
+  />
+  ```
+
+
+- #### `reset()`
+
+  This will reset all the field values to the default values
+
+
+
+- #### `isDirty` & `setIsDirty`
+
+  This state can be used to detect if the user made changes to the field values and handle it.
+
+- #### `isBusy` & `setIsBusy`
+
+  This state can be used to handle the loading and disabled logic, this state has to be set and reset as part of your form submission logic.
+
+- #### `step` & `setStep`
+
+  This state that can be usefyll when handling stepped forms.
+
+
+- #### `meta` & `setMeta` & `setAllMeta`
+
+  This state is similar to the fields state, but isn't part of the validation of reset logic, can be usefull for when storing extra data that is used accross components but not passed with the form submission.
+
+
+- #### `validate(fieldsToCheck?: string[])`
+
+  This is the trigger for running hte validation, not passing any fields will trigger a full validation on all fields, otherwise if you pass an array of field names it will do a partial validation for them. More info on how to setup validation rules this can be found below in the [validation section](#validation).
+
+
+- #### `errors`
+
+  This is property that returns the `useFormErrors` hook used by the form hook, the form hook will use this to process frontend validation errors, but you use it outside to process BackEnd errors outside the hook, more info on how to use this in the [useFormErrors section](#useformerrors-a-hook-that-handles-errors) below.
+
+
+### Options for `useHook` & `FormContextProvider`
+
+You can pass these options to the hook and context provider:
+
+- #### `onUpdateFields: (data)=>data`
+
+  This option is an event option that allows you to manipulate the fields state data everytime they are updated.
+
+
+- #### `validation: new Resolver(...)`
+
+  This option allows you to pass a validation resolver to provide the ability of validating fields, more info about this can be found in the [validation section](#validation).
+
+
+
+
+---
 
 ## Context Provider : `useFormContext` & `FormContextProvider`
 
@@ -159,17 +282,19 @@ const WrapperComponent = ()=>{
 
 
 2. ### Usage of `useFormContext`
-   This hook will return the same properties as useHook, make sure its called inside the context provider you setup before:
+   This hook will return the same properties as `useHoo`k, just make sure you call this hook inside the context provider you setup before:
 ```
 const MyFormComponent = ()=>{
+  // This can be called on any child components under the context provider
   const { fields } = useFormContext<MyFormInterface>();
 
   return (....);
 }
 ```
-___
 
-## Errors: `useFormErrors` Validation errors handling hook
+---
+
+## `useFormErrors` a hook that handles errors
 
 This hooks is provided as a property in the previous hooks, but can also be used on its own.
 
@@ -238,18 +363,8 @@ export function ValidatedForm() {
 
 ```
 
-### Validation Examples
-
-#### Simple Validation Form
-
-[![Edit react-form-reducer--validation-demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/react-form-reducer--validation-demo-vmhtdr?fontsize=12&hidenavigation=1&module=%2Fsrc%2FApp.tsx&theme=dark)
-
-#### Partial validation in a context form (stepped form)
-
-[![Edit react-form-reducer--stepped-validation-demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/react-form-reducer--stepped-validation-demo-gkehzf?autoresize=1&fontsize=12&hidenavigation=1&module=%2Fsrc%2Fsteps%2FMyForm.tsx&theme=dark)
 
 Further documentation on the validation resolver can be found on its repo: [https://github.com/sweetscript/react-form-reducer-validator](https://github.com/sweetscript/react-form-reducer-validator)
-
 
 
 
