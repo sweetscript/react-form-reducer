@@ -1,14 +1,13 @@
-# React-Form-Reducer 💫
+# :lollipop: React-Form-Reducer
 
 A utility of React hooks and a context that provide a simpler form field management, in addition to support of frontend validation and backend validation error processing. The library uses the React built-in reducers and context with no dependencies to achieve a typescript oriented way of managing form state efficiently and heling developers with autosuggestion of form fields in both setters and getters.
 
 	> This package works best with TypeScript
 
 ![npm](https://img.shields.io/npm/v/react-form-reducer)
-![Snyk Vulnerabilities for npm package version](https://img.shields.io/snyk/vulnerabilities/npm/react-form-reducer)
 ![ts](https://badgen.net/badge/Built%20With/TypeScript/blue)
-![npm bundle size](https://img.shields.io/bundlephobia/min/react-form-reducer)
-![npm bundle size](https://img.shields.io/bundlephobia/minzip/react-form-reducer)
+
+> ![npm bundle size](https://img.shields.io/bundlephobia/min/react-form-reducer) ![npm bundle size](https://img.shields.io/bundlephobia/minzip/react-form-reducer) → :feather: [Lightweight](https://bundlephobia.com/package/react-form-reducer) with no dependencies
 
 ## Install
 
@@ -89,7 +88,18 @@ Example using `FormContextProvider` and `useFormContext`
 ---
 
 ## Documentation
-This library provides both a hook and context, the `useForm` hook can be used for single component forms, and `useFormContext`
+This library provides both a hook and a context provider, the `useForm` hook can be used for single component forms, and `useFormContext` can be used for multi-component forms.
+
+- [useForm hook](#useform-hook)
+  - [Properties of useForm](#properties--of-useform--useformcontext)
+  - [Options for useForm](#options-for-useform--formcontextprovider)
+- [Context Provider: useFormContext & FormContextProvider](#context-provider--useformcontext--formcontextprovider)
+  - [Setting up provider context](#setting-up-provider-context)
+  - [Usage of `useFormContext`](#usage-of-useformcontext)
+- [useFormErrors](#useformerrors-a-hook-that-handles-errors)
+- [Validation](#validation)
+- [Handle Backend Validation Errors](#handle-backend-validation-errors)
+- [Contribution](#contribution)
 
 
 ## `useForm` hook
@@ -147,7 +157,7 @@ const {
 });
 ```
 
-### Properties  of `useHook` & `useFormContext`
+### Properties  of `useForm` & `useFormContext`
 
 - #### `fields`
 
@@ -228,7 +238,7 @@ const {
   This is property that returns the `useFormErrors` hook used by the form hook, the form hook will use this to process frontend validation errors, but you use it outside to process BackEnd errors outside the hook, more info on how to use this in the [useFormErrors section](#useformerrors-a-hook-that-handles-errors) below.
 
 
-### Options for `useHook` & `FormContextProvider`
+### Options for `useForm` & `FormContextProvider`
 
 You can pass these options to the hook and context provider:
 
@@ -314,13 +324,11 @@ error.has('field_name');
 // Returns the array of error messages for field
 error.get('field_name');
 
-
 // Returns the first error messages for field
 error.first('field_name');
 
 // Clears error messages for field;
 error.forget('field_name');
-
 
 // Clears all error messages
 error.forget();
@@ -349,7 +357,7 @@ To use validation on form fields, you need to install the resolver library [`rea
 npm i react-form-reducer-validator
 ```
 
-The resolver wraps the [`validatorjs`](https://www.npmjs.com/package/validatorjs) library to be used for validation, the library allows for a neat & simple way of adding validation. and also the resolver allows for partial validation which is useful for stepped forms
+The resolver wraps and uses the [`validatorjs`](https://www.npmjs.com/package/validatorjs) library, the library allows for a neat & simple way of adding validation rules. and the resolver allows for partial validation which is useful for stepped forms. You can also build and use your own resolver library if you like!
 
 
 ```tsx
@@ -413,13 +421,15 @@ Further documentation on the validation resolver can be found on its repo: [http
 
 
 
-## Backend validation errors
+## Handle Backend Validation Errors
 
 To process the errors returned from the backend you can use the `useFormErrors` hook, as long as they're in the suitable format.
 
 
 
-## Contribution ![GitHub issues](https://img.shields.io/github/issues/sweetscript/react-form-reducer)
+## Contribution
+
+![GitHub issues](https://img.shields.io/github/issues/sweetscript/react-form-reducer)
 
 Feedback, Issue reports, suggestions and contributions are appreciated and welcome.
 
