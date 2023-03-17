@@ -69,6 +69,9 @@ export default function useForm<IFields, IMeta = never>(
         setField(name, target.value);
       }
     };
+  const handleValueChange = (name: keyof IFields) => (value: any) => {
+    setField(name, value);
+  };
   const assignFieldInput = (name: keyof IFields) => {
     return {
       onChange: handleInputChange(name),
@@ -78,7 +81,9 @@ export default function useForm<IFields, IMeta = never>(
   };
   const assignFieldUI = (name: keyof IFields) => {
     return {
-      ...assignFieldInput(name),
+      value: fields?.[name],
+      disabled: isBusy,
+      onChange: handleValueChange(name),
       error: formErrors.has(name),
       helperText: formErrors.first(name) || undefined
     };

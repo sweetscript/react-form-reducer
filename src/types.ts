@@ -72,6 +72,7 @@ export type AssignFieldInput = {
   disabled: boolean;
 };
 export type AssignFieldUI = AssignFieldInput & {
+  onChange: (value: any) => void;
   error?: boolean;
   helperText?: string;
 };
