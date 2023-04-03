@@ -1,6 +1,5 @@
 import { ChangeEventHandler, Dispatch, SetStateAction } from 'react';
 
-// export interface FormHookType<R, M = never> {
 export interface FormHookType<IFields, IMeta = never> {
   fields: IFields;
   setFields: (fields: IFields) => void;
@@ -23,8 +22,11 @@ export interface FormHookType<IFields, IMeta = never> {
 
   // Validation
   validate: (
-    fieldsToCheck?: Array<keyof IFields>
-  ) => Promise<FormValidateResponse>;
+    fieldsToCheck?: Array<keyof IFields | string>,
+    setErrors?: boolean
+  ) => FormValidateResponse;
+  // Validation watcher state
+  validationWatcher: FormValidateResponse;
 
   meta: IMeta;
   setAllMeta: (metaData: IMeta) => void;
@@ -42,7 +44,11 @@ export type UseFormOptions<IFields> = {
   validation?: ValidationResolver<IFields>;
 };
 
-export type FormValidateResponse = { passed: boolean; errors?: Errors };
+export type FormValidateResponse = {
+  passed: boolean;
+  errorMessages?: Errors;
+  errors?: FormErrorsProps;
+};
 
 export type Errors = { [key: string]: string[] };
 
@@ -51,6 +57,7 @@ export type FormErrorsProps<IFields = never> = {
 
   //GETTERS
   has: (field: keyof IFields | string) => boolean;
+  hasAny: (field: Array<keyof IFields | string>) => boolean;
   hasErrors: () => boolean;
   get: (field: keyof IFields | string) => any;
   first: (field: keyof IFields | string) => string | null;

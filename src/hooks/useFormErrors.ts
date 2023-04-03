@@ -8,6 +8,13 @@ export default function useFormErrors<
   IFields = never
 >(): FormErrorsProps<IFields> {
   const [errors, setErrors] = useState<Errors>({});
+  return createFormErrors(errors, setErrors);
+}
+
+export function createFormErrors<IFields = never>(
+  errors: Errors,
+  errorSetter?: (value: any) => void
+): FormErrorsProps<IFields> {
   const instance = {
     errors: errors,
 
@@ -15,17 +22,35 @@ export default function useFormErrors<
      * Determine if there are any error messages for the field
      * @param field
      */
-    has: (field: keyof IFields) => {
+    has: (field: keyof IFields): boolean => {
       return errors && !!Object.getOwnPropertyDescriptor(errors, field);
+    },
+    /**
+     * Determine if there are any error messages for the field
+     * @param fields
+     */
+    hasAny: (fields: Array<keyof IFields>): boolean => {
+      if (!errors) return false;
+      return (
+        fields.filter((field) => {
+          return !!Object.getOwnPropertyDescriptor(errors, field);
+        }).length > 0
+      );
     },
 
     /**
      * Determine if form has any errors
      */
-    hasErrors: () => {
+    hasErrors: (): boolean => {
       return Object.keys(errors).length > 0;
     }
   } as FormErrorsProps<IFields>;
+
+  const setErrors =
+    errorSetter ||
+    function (value: any) {
+      instance.errors = value;
+    };
 
   /**
    * Returns an array of error messages for a field, or an empty array

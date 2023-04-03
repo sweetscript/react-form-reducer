@@ -1,6 +1,6 @@
-import { ChangeEventHandler, useReducer, useState } from 'react';
-import useFormErrors from './useFormErrors';
-import { FormHookType, UseFormOptions } from '../types';
+import { ChangeEventHandler, useEffect, useReducer, useState } from 'react';
+import useFormErrors, { createFormErrors } from './useFormErrors';
+import { FormHookType, FormValidateResponse, UseFormOptions } from '../types';
 
 /**
  * This is the form state hook
@@ -18,6 +18,10 @@ export default function useForm<IFields, IMeta = never>(
   const [isDirty, setIsDirty] = useState<boolean>(false);
   const [isBusy, setIsBusy] = useState<boolean>(false);
   const [step, setStep] = useState<number>(1);
+  const [validationWatcher, setValidationWatcher] =
+    useState<FormValidateResponse>({
+      passed: false
+    });
 
   const { onUpdateFields } = options || {};
 
@@ -100,7 +104,10 @@ export default function useForm<IFields, IMeta = never>(
   };
 
   // Validation logic
-  const validate = async (fieldsToCheck?: Array<keyof IFields>) => {
+  const validate = (
+    fieldsToCheck?: Array<keyof IFields>,
+    setErrors = true
+  ): FormValidateResponse => {
     const resolver = options?.validation;
     if (!resolver) {
       throw new Error('No validator resolver passed');
@@ -109,10 +116,19 @@ export default function useForm<IFields, IMeta = never>(
     if (valid == true) {
       return { passed: true };
     }
-
-    formErrors.set(valid);
-    return { passed: false, error: valid };
+    if (setErrors) {
+      formErrors.set(valid);
+    }
+    return {
+      passed: false,
+      errorMessages: valid,
+      errors: createFormErrors(valid)
+    };
   };
+
+  useEffect(() => {
+    if (options?.validation) setValidationWatcher(validate(undefined, false));
+  }, [fields]);
 
   return {
     fields,
@@ -130,6 +146,7 @@ export default function useForm<IFields, IMeta = never>(
     step,
     setStep,
     validate,
+    validationWatcher,
 
     meta,
     setAllMeta,

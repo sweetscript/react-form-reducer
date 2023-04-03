@@ -129,10 +129,12 @@ const {
   //  Meta Data State
   meta,
   setMeta,
-  setAllMeta
+  setAllMeta,
 
   // Validate trigger
   validate,
+  // Validate watcher state
+  validationWatcher,
 
   // Validation errors = useFormErrors()
   errors
@@ -153,7 +155,7 @@ const {
 { 
   //meta default values // optional, only if you wish to use the meta state
   metafield: 'default',
-  ....
+  ...
 });
 ```
 
@@ -233,6 +235,11 @@ const {
   This is the trigger for running hte validation, not passing any fields will trigger a full validation on all fields, otherwise if you pass an array of field names it will do a partial validation for them. More info on how to setup validation rules this can be found below in the [validation section](#validation).
 
 
+- #### `validationWatcher`
+
+  This is a state validation response, it can be useful if you wish to display or print validation errors in real time.
+
+
 - #### `errors`
 
   This is property that returns the `useFormErrors` hook used by the form hook, the form hook will use this to process frontend validation errors, but you use it outside to process BackEnd errors outside the hook, more info on how to use this in the [useFormErrors section](#useformerrors-a-hook-that-handles-errors) below.
@@ -307,7 +314,7 @@ const MyFormComponent = ()=>{
 
 ## `useFormErrors` a hook that handles errors
 
-This hooks is provided as the `error` property in the previous hooks, but can also be used on its own.
+This hook is provided as the `error` property in the previous hooks, but can also be used on its own.
 
 ```tsx
 const errors = useFormErrors();
@@ -320,6 +327,9 @@ errors.add('field_name', 'Invalid value');
 
 // Check if errors exist for field
 error.has('field_name');
+
+// Check if errors exist for specific fields
+error.hasAny(['field_1', 'field_2']);
 
 // Returns the array of error messages for field
 error.get('field_name');

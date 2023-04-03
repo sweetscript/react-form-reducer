@@ -14,7 +14,8 @@ export interface FormHookType<IFields, IMeta = never> {
     setIsBusy: Dispatch<SetStateAction<boolean>>;
     reset: () => void;
     errors: FormErrorsProps;
-    validate: (fieldsToCheck?: Array<keyof IFields>) => Promise<FormValidateResponse>;
+    validate: (fieldsToCheck?: Array<keyof IFields | string>, setErrors?: boolean) => FormValidateResponse;
+    validationWatcher: FormValidateResponse;
     meta: IMeta;
     setAllMeta: (metaData: IMeta) => void;
     setMeta: (name: keyof IMeta, value: unknown) => void;
@@ -26,7 +27,8 @@ export type UseFormOptions<IFields> = {
 };
 export type FormValidateResponse = {
     passed: boolean;
-    errors?: Errors;
+    errorMessages?: Errors;
+    errors?: FormErrorsProps;
 };
 export type Errors = {
     [key: string]: string[];
@@ -34,6 +36,7 @@ export type Errors = {
 export type FormErrorsProps<IFields = never> = {
     errors?: Errors;
     has: (field: keyof IFields | string) => boolean;
+    hasAny: (field: Array<keyof IFields | string>) => boolean;
     hasErrors: () => boolean;
     get: (field: keyof IFields | string) => any;
     first: (field: keyof IFields | string) => string | null;
