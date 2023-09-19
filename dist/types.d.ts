@@ -1,5 +1,5 @@
 import { ChangeEventHandler, Dispatch, SetStateAction } from 'react';
-export interface FormHookType<IFields, IMeta = never> {
+export interface FormHookType<IFields extends Record<string, any> = Record<string, string>, IMeta = never> {
     fields: IFields;
     setFields: (fields: IFields) => void;
     setField: (name: keyof IFields, value: unknown) => void;
@@ -20,7 +20,7 @@ export interface FormHookType<IFields, IMeta = never> {
     setAllMeta: (metaData: IMeta) => void;
     setMeta: (name: keyof IMeta, value: unknown) => void;
 }
-export type FormContextType<IFields, IMeta = never> = FormHookType<IFields, IMeta>;
+export type FormContextType<IFields extends Record<string, any> = Record<string, string>, IMeta = never> = FormHookType<IFields, IMeta>;
 export type UseFormOptions<IFields> = {
     onUpdateFields?: (fields: IFields) => IFields;
     validation?: ValidationResolver<IFields>;
